@@ -1,0 +1,216 @@
+{
+  "$schema": "https://schema.agentcore.aws.dev/v1/agentcore.json",
+  "name": "CustomerSupport",
+  "version": 1,
+  "managedBy": "CDK",
+  "tags": {
+    "agentcore:created-by": "agentcore-cli",
+    "agentcore:project-name": "CustomerSupport"
+  },
+  "runtimes": [
+    {
+      "name": "CustomerSupport",
+      "build": "CodeZip",
+      "entrypoint": "main.py",
+      "codeLocation": "app/CustomerSupport/",
+      "runtimeVersion": "PYTHON_3_14",
+      "networkMode": "PUBLIC",
+      "protocol": "HTTP",
+      "requestHeaderAllowlist": [
+        "X-Amzn-Bedrock-AgentCore-Runtime-Custom-User-Id",
+        "Authorization"
+      ],
+      "authorizerType": "CUSTOM_JWT",
+      "authorizerConfiguration": {
+        "customJwtAuthorizer": {
+          "discoveryUrl": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_DW09we4TP/.well-known/openid-configuration",
+          "allowedClients": [
+            "39468j8d9na25e14e735u3rt05",
+            "6fbn6gsiu0j4clb01h2nhktdf3"
+          ]
+        }
+      }
+    },
+    {
+      "name": "CustomerSupportAB",
+      "build": "CodeZip",
+      "entrypoint": "main.py",
+      "codeLocation": "app/CustomerSupportAB/",
+      "runtimeVersion": "PYTHON_3_14",
+      "networkMode": "PUBLIC",
+      "protocol": "HTTP"
+    }
+  ],
+  "memories": [
+    {
+      "name": "SharedMemory",
+      "eventExpiryDuration": 30,
+      "strategies": [
+        {
+          "type": "SEMANTIC",
+          "namespaceTemplates": [
+            "/users/{actorId}/facts"
+          ]
+        },
+        {
+          "type": "SUMMARIZATION",
+          "namespaceTemplates": [
+            "/summaries/{actorId}/{sessionId}"
+          ]
+        }
+      ]
+    }
+  ],
+  "knowledgeBases": [],
+  "credentials": [
+    {
+      "authorizerType": "OAuthCredentialProvider",
+      "name": "gateway-egress-oauth",
+      "discoveryUrl": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_DW09we4TP/.well-known/openid-configuration",
+      "scopes": [
+        "default-m2m-resource-server-68ee5660/read"
+      ],
+      "vendor": "CustomOauth2"
+    }
+  ],
+  "evaluators": [],
+  "onlineEvalConfigs": [
+    {
+      "name": "QualityMonitor",
+      "agent": "CustomerSupport",
+      "evaluators": [
+        "Builtin.GoalSuccessRate",
+        "Builtin.Correctness",
+        "Builtin.ToolSelectionAccuracy"
+      ],
+      "samplingRate": 100,
+      "enableOnCreate": true
+    },
+    {
+      "name": "ABQualityMonitor",
+      "agent": "CustomerSupportAB",
+      "evaluators": [
+        "Builtin.GoalSuccessRate"
+      ],
+      "samplingRate": 100,
+      "enableOnCreate": true
+    }
+  ],
+  "agentCoreGateways": [
+    {
+      "name": "my-gateway-secure",
+      "protocolType": "None",
+      "description": "Gateway for my-gateway-secure",
+      "targets": [
+        {
+          "name": "WarrantyCheck",
+          "targetType": "lambdaFunctionArn",
+          "lambdaFunctionArn": {
+            "lambdaArn": "arn:aws:lambda:us-east-1:487220589114:function:workshop-warranty-check",
+            "toolSchemaFile": "app/CustomerSupport/tool/warranty_schema.json"
+          }
+        },
+        {
+          "name": "ProcessRefund",
+          "targetType": "lambdaFunctionArn",
+          "lambdaFunctionArn": {
+            "lambdaArn": "arn:aws:lambda:us-east-1:487220589114:function:workshop-process-refund",
+            "toolSchemaFile": "app/CustomerSupport/tool/refund_schema.json"
+          }
+        },
+        {
+          "name": "customer-support-ab",
+          "targetType": "httpRuntime",
+          "httpRuntime": {
+            "runtime": "CustomerSupportAB"
+          }
+        }
+      ],
+      "authorizerType": "CUSTOM_JWT",
+      "authorizerConfiguration": {
+        "customJwtAuthorizer": {
+          "discoveryUrl": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_DW09we4TP/.well-known/openid-configuration",
+          "allowedClients": [
+            "39468j8d9na25e14e735u3rt05",
+            "6fbn6gsiu0j4clb01h2nhktdf3"
+          ]
+        }
+      },
+      "enableSemanticSearch": true,
+      "exceptionLevel": "NONE",
+      "policyEngineConfiguration": {
+        "policyEngineName": "CustomerSupportPolicyEngine",
+        "mode": "LOG_ONLY"
+      }
+    }
+  ],
+  "policyEngines": [
+    {
+      "name": "CustomerSupportPolicyEngine",
+      "description": "Governs customer support agent tool access — refund limits and tool permissions",
+      "policies": [
+        {
+          "name": "refund_limit_policy",
+          "description": "Allow refunds under 100 dollars only",
+          "statement": "permit(principal, action == AgentCore::Action::\"ProcessRefund___process_refund\", resource == AgentCore::Gateway::\"arn:aws:bedrock-agentcore:us-east-1:487220589114:gateway/customersupport-my-gateway-secure-nmzn43iqw3\") when { context.input.amount < 100 };",
+          "validationMode": "FAIL_ON_ANY_FINDINGS",
+          "enforcementMode": "ACTIVE",
+          "authorizationPhase": "INITIATE"
+        },
+        {
+          "name": "warranty_check_policy",
+          "description": "Allow all authenticated users to check warranties",
+          "statement": "permit(principal, action == AgentCore::Action::\"WarrantyCheck___check_warranty\", resource == AgentCore::Gateway::\"arn:aws:bedrock-agentcore:us-east-1:487220589114:gateway/customersupport-my-gateway-secure-nmzn43iqw3\") when { (principal is AgentCore::OAuthUser) };",
+          "validationMode": "IGNORE_ALL_FINDINGS",
+          "enforcementMode": "ACTIVE",
+          "authorizationPhase": "INITIATE"
+        }
+      ]
+    }
+  ],
+  "configBundles": [
+    {
+      "name": "customerSupportControl",
+      "type": "ConfigurationBundle",
+      "components": {
+        "{{runtime:CustomerSupportAB}}": {
+          "configuration": {
+            "system_prompt": "You are a helpful and professional customer support assistant for an e-commerce company. Provide accurate information using the tools available to you. Be friendly, patient, and understanding. Always offer additional help after answering. Always use tools to get accurate information rather than guessing."
+          }
+        }
+      },
+      "branchName": "mainline",
+      "commitMessage": "Baseline prompt"
+    },
+    {
+      "name": "customerSupportTreatment",
+      "type": "ConfigurationBundle",
+      "components": {
+        "{{runtime:CustomerSupportAB}}": {
+          "configuration": {
+            "system_prompt": ""
+          }
+        }
+      },
+      "branchName": "mainline",
+      "commitMessage": "Recommended prompt from cs-prompt-rec"
+    }
+  ],
+  "abTests": [],
+  "harnesses": [
+    {
+      "name": "OrderResearchAgent",
+      "path": "app/OrderResearchAgent"
+    },
+    {
+      "name": "PersistentReportAgent",
+      "path": "app/PersistentReportAgent"
+    },
+    {
+      "name": "ContainerAgent",
+      "path": "app/ContainerAgent"
+    }
+  ],
+  "datasets": [],
+  "payments": []
+}

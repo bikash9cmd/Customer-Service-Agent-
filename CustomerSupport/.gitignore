@@ -1,0 +1,26 @@
+# Secrets & env
+agentcore/.env.local
+*.env
+.env
+
+# CLI state / logs
+agentcore/.cli/
+*.log
+loadgen.sh
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# Node
+node_modules/
+
+# CDK output
+agentcore/cdk/cdk.out/
+agentcore/cdk/dist/
+
+# Misc
+.DS_Store
+trace.json
