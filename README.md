@@ -1,3 +1,6 @@
+# Bedrock AgentCore Customer Support Agent
+
+> **Tech stack:** Python · Amazon Bedrock AgentCore · Strands Agents · Amazon Cognito (JWT) · Cedar policies · LLM evaluation
 
 ---
 
