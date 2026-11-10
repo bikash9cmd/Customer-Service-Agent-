@@ -55,4 +55,4 @@ Full-Stack Developer & Solutions Architect | Focus: Cloud Infrastructure (AWS), 
 
 ## 📄 License
 
-This project is for educational/portfolio purposes, built following AWS's official AgentCore workshop.
+Released under the [MIT License](LICENSE). Built for learning and portfolio purposes, following AWS's official AgentCore workshop.
