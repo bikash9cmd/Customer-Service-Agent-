@@ -32,6 +32,7 @@ Full step-by-step setup, including memory, gateway, JWT auth, policies, and the 
 - The Runtime and Gateway are secured with Cognito JWT authentication
 - Sensitive tool inputs (e.g., email addresses in refund reasons) are blocked via semantic policy guardrails
 - This repository contains **no live credentials** — reproduce by provisioning your own AWS resources
+- Account-specific IDs in `CustomerSupport/agentcore/*.json` and `harness.json` are placeholders (`<YOUR_AWS_ACCOUNT_ID>`, `<YOUR_COGNITO_USER_POOL_ID>`, and so on). Replace them with your own values, or let `agentcore deploy` regenerate them
 
 ---
 

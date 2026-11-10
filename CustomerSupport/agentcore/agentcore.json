@@ -23,10 +23,10 @@
       "authorizerType": "CUSTOM_JWT",
       "authorizerConfiguration": {
         "customJwtAuthorizer": {
-          "discoveryUrl": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_DW09we4TP/.well-known/openid-configuration",
+          "discoveryUrl": "https://cognito-idp.us-east-1.amazonaws.com/<YOUR_COGNITO_USER_POOL_ID>/.well-known/openid-configuration",
           "allowedClients": [
-            "39468j8d9na25e14e735u3rt05",
-            "6fbn6gsiu0j4clb01h2nhktdf3"
+            "<YOUR_COGNITO_APP_CLIENT_ID_1>",
+            "<YOUR_COGNITO_APP_CLIENT_ID_2>"
           ]
         }
       }
@@ -66,7 +66,7 @@
     {
       "authorizerType": "OAuthCredentialProvider",
       "name": "gateway-egress-oauth",
-      "discoveryUrl": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_DW09we4TP/.well-known/openid-configuration",
+      "discoveryUrl": "https://cognito-idp.us-east-1.amazonaws.com/<YOUR_COGNITO_USER_POOL_ID>/.well-known/openid-configuration",
       "scopes": [
         "default-m2m-resource-server-68ee5660/read"
       ],
@@ -106,7 +106,7 @@
           "name": "WarrantyCheck",
           "targetType": "lambdaFunctionArn",
           "lambdaFunctionArn": {
-            "lambdaArn": "arn:aws:lambda:us-east-1:487220589114:function:workshop-warranty-check",
+            "lambdaArn": "arn:aws:lambda:us-east-1:<YOUR_AWS_ACCOUNT_ID>:function:workshop-warranty-check",
             "toolSchemaFile": "app/CustomerSupport/tool/warranty_schema.json"
           }
         },
@@ -114,7 +114,7 @@
           "name": "ProcessRefund",
           "targetType": "lambdaFunctionArn",
           "lambdaFunctionArn": {
-            "lambdaArn": "arn:aws:lambda:us-east-1:487220589114:function:workshop-process-refund",
+            "lambdaArn": "arn:aws:lambda:us-east-1:<YOUR_AWS_ACCOUNT_ID>:function:workshop-process-refund",
             "toolSchemaFile": "app/CustomerSupport/tool/refund_schema.json"
           }
         },
@@ -129,10 +129,10 @@
       "authorizerType": "CUSTOM_JWT",
       "authorizerConfiguration": {
         "customJwtAuthorizer": {
-          "discoveryUrl": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_DW09we4TP/.well-known/openid-configuration",
+          "discoveryUrl": "https://cognito-idp.us-east-1.amazonaws.com/<YOUR_COGNITO_USER_POOL_ID>/.well-known/openid-configuration",
           "allowedClients": [
-            "39468j8d9na25e14e735u3rt05",
-            "6fbn6gsiu0j4clb01h2nhktdf3"
+            "<YOUR_COGNITO_APP_CLIENT_ID_1>",
+            "<YOUR_COGNITO_APP_CLIENT_ID_2>"
           ]
         }
       },
@@ -152,7 +152,7 @@
         {
           "name": "refund_limit_policy",
           "description": "Allow refunds under 100 dollars only",
-          "statement": "permit(principal, action == AgentCore::Action::\"ProcessRefund___process_refund\", resource == AgentCore::Gateway::\"arn:aws:bedrock-agentcore:us-east-1:487220589114:gateway/customersupport-my-gateway-secure-nmzn43iqw3\") when { context.input.amount < 100 };",
+          "statement": "permit(principal, action == AgentCore::Action::\"ProcessRefund___process_refund\", resource == AgentCore::Gateway::\"arn:aws:bedrock-agentcore:us-east-1:<YOUR_AWS_ACCOUNT_ID>:gateway/<YOUR_GATEWAY_ID>\") when { context.input.amount < 100 };",
           "validationMode": "FAIL_ON_ANY_FINDINGS",
           "enforcementMode": "ACTIVE",
           "authorizationPhase": "INITIATE"
@@ -160,7 +160,7 @@
         {
           "name": "warranty_check_policy",
           "description": "Allow all authenticated users to check warranties",
-          "statement": "permit(principal, action == AgentCore::Action::\"WarrantyCheck___check_warranty\", resource == AgentCore::Gateway::\"arn:aws:bedrock-agentcore:us-east-1:487220589114:gateway/customersupport-my-gateway-secure-nmzn43iqw3\") when { (principal is AgentCore::OAuthUser) };",
+          "statement": "permit(principal, action == AgentCore::Action::\"WarrantyCheck___check_warranty\", resource == AgentCore::Gateway::\"arn:aws:bedrock-agentcore:us-east-1:<YOUR_AWS_ACCOUNT_ID>:gateway/<YOUR_GATEWAY_ID>\") when { (principal is AgentCore::OAuthUser) };",
           "validationMode": "IGNORE_ALL_FINDINGS",
           "enforcementMode": "ACTIVE",
           "authorizationPhase": "INITIATE"

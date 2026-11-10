@@ -15,10 +15,10 @@
       "name": "my-gateway-secure",
       "config": {
         "agentCoreGateway": {
-          "gatewayArn": "arn:aws:bedrock-agentcore:us-east-1:487220589114:gateway/customersupport-my-gateway-secure-nmzn43iqw3",
+          "gatewayArn": "arn:aws:bedrock-agentcore:us-east-1:<YOUR_AWS_ACCOUNT_ID>:gateway/<YOUR_GATEWAY_ID>",
           "outboundAuth": {
             "oauth": {
-              "providerArn": "arn:aws:bedrock-agentcore:us-east-1:487220589114:token-vault/default/oauth2credentialprovider/gateway-egress-oauth",
+              "providerArn": "arn:aws:bedrock-agentcore:us-east-1:<YOUR_AWS_ACCOUNT_ID>:token-vault/default/oauth2credentialprovider/gateway-egress-oauth",
               "scopes": [
                 "default-m2m-resource-server-68ee5660/read"
               ],
