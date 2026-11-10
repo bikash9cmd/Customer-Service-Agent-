@@ -47,9 +47,10 @@ Building this reinforced a few things about production agentic systems:
 
 ## 👤 Author
 
-**Bikash Kushwaha**
-Cloud System Engineer @ Tekbay | BSc Computer Science with AI, Birmingham City University (via Sunway College, Kathmandu)
-Full-Stack Developer & Solutions Architect | Focus: Cloud Infrastructure (AWS), AI/ML Pipelines, Backend Development
+**Bikash Kushwaha**: AI / Machine Learning Engineer · 5× AWS Certified  
+AI Software Engineering Intern @ Asterdio · previously ML Engineer Apprentice @ TekBay Digital Solutions  
+BSc (Hons) Computer Science with AI, Birmingham City University (via Sunway College, Kathmandu)  
+Focus: LLM agents and RAG on Amazon Bedrock, MLOps, AWS cloud infrastructure · [GitHub](https://github.com/bikash9cmd) · [LinkedIn](https://www.linkedin.com/in/bikash9cmd)
 
 ---
 
